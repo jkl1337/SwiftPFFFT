@@ -1,0 +1,31 @@
+name: Swift CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    name: Run Unit Tests on macOS and Linux
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        swift: ["5.9", "5.10, "6.0"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Swift ${{ matrix.swift }}
+        uses: fwal/setup-swift@v1
+        with:
+          swift-version: ${{ matrix.swift }}
+          os: ${{ matrix.os }}
+
+      - name: Build and Run Tests
+        run: |
+          swift build --enable-test-discovery
+          swift test
