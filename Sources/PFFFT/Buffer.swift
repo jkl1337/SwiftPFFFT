@@ -36,7 +36,7 @@ public struct Buffer<T>: ~Copyable {
         try buffer.map(transform)
     }
 
-    @inlinable public func mutateEach(_ body: (Int, inout T) throws -> Void) rethrows {
+    @inlinable public func mapInPlace(_ body: (Int, inout T) throws -> Void) rethrows {
         for i in 0 ..< buffer.count {
             try body(i, &buffer[i])
         }
@@ -52,7 +52,7 @@ public protocol ComplexType {
 extension Complex: ComplexType {}
 
 public extension Buffer where T: ComplexType {
-    @inlinable public func mutateEachSwapLast(_ body: (Int, inout T) throws -> Void) rethrows {
+    @inlinable func mapInPlaceSwapLast(_ body: (Int, inout T) throws -> Void) rethrows {
         for i in 0 ..< buffer.count {
             try body(i, &buffer[i])
         }
