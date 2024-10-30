@@ -20,6 +20,7 @@ let package = Package(
             publicHeadersPath: "include",
             cSettings: [
                 .define("PFFFT_SCALVEC_ENABLED", to: "1"),
+                .define("PFFFT_ENABLE_NEON"),
                 .define("_USE_MATH_DEFINES"),
                 .define("NDEBUG"),
             ]

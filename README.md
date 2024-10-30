@@ -1,3 +1,7 @@
+[![CI](https://github.com/jkl1337/SwiftPFFFT/actions/workflows/swift.yml/badge.svg)](https://github.com/jkl1337/SwiftPFFFT/actions/workflows/swift.yml)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjkl1337%2FSwiftPFFFT%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/jkl1337/SwiftPFFFT)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fjkl1337%2FSwiftPFFFT%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/jkl1337/SwiftPFFFT)
+
 # SwiftPFFFT
 
 Swift package providing a PFFFT (Pretty Fast, Fast Fourier Transform) library with wrapper.
@@ -21,7 +25,7 @@ performance with much simpler usage and a permissive 3 clause BSD license.
 let fft = try FFT<Complex<Float>>(n: 16)
 let signal = fft.makeSignalBuffer()
 
-signal.mutateEach { (i, v) in
+signal.mapInPlace { (i, v) in
     v = Complex(Float(i) + 1.0, Float(i) - 2.0)
 }
 
