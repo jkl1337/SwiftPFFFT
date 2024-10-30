@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -22,12 +22,12 @@ let package = Package(
                 .define("PFFFT_SCALVEC_ENABLED", to: "1"),
                 .define("_USE_MATH_DEFINES"),
                 .define("NDEBUG"),
-                .unsafeFlags(["-O3"]),
             ]
         ),
         .target(
             name: "PFFFT",
-            dependencies: ["PFFFTLib", .product(name: "Numerics", package: "swift-numerics")]
+            dependencies: ["PFFFTLib", .product(name: "Numerics", package: "swift-numerics")],
+            swiftSettings: [.enableExperimentalFeature("AccessLevelOnImport")]
         ),
         .testTarget(
             name: "PFFFTTests",

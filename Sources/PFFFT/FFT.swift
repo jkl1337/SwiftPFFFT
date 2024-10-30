@@ -159,14 +159,20 @@ public struct FFT<T: FFTElement>: ~Copyable {
 
     let ptr: OpaquePointer
     let n: Int
-    let work: Buffer<ScalarType>?
+    let work: Buffer<ScalarType>
     let setup: Setup
 
     public init(setup: Setup) {
         self.setup = setup
         ptr = setup.ptr
         n = setup.n
-        work = n > 4096 ? Buffer<ScalarType>(capacity: T.self == ComplexType.self ? 2 * n : n) : nil
+
+        let workCapacity = if n > 4096 {
+            T.self == ComplexType.self ? 2 * n : n
+        } else {
+            0
+        }
+        work = Buffer(capacity: workCapacity)
     }
 
     /// Initialize the FFT implementation with the given size and type.
@@ -202,10 +208,11 @@ public struct FFT<T: FFTElement>: ~Copyable {
     }
 
     @inline(__always)
-    func toAddress(_ work: borrowing Buffer<ScalarType>?) -> UnsafeMutablePointer<ScalarType>? {
-        switch work {
-        case let .some(b): return b.baseAddress
-        case .none: return nil
+    var workPtr: UnsafeMutablePointer<ScalarType>? {
+        if work.count > 0 {
+            return work.baseAddress
+        } else {
+            return nil
         }
     }
 
@@ -271,12 +278,12 @@ public struct FFT<T: FFTElement>: ~Copyable {
     ///  - sign: The direction of the FFT.
     public func forward(signal: borrowing Buffer<T>, spectrum: borrowing Buffer<ComplexType>) {
         checkFftBufferCounts(signal: signal, spectrum: spectrum)
-        ScalarType.pffftTransformOrdered(ptr, rebind(signal), rebind(spectrum), toAddress(work), .forward)
+        ScalarType.pffftTransformOrdered(ptr, rebind(signal), rebind(spectrum), workPtr, .forward)
     }
 
     public func inverse(spectrum: borrowing Buffer<ComplexType>, signal: borrowing Buffer<T>) {
         checkFftBufferCounts(signal: signal, spectrum: spectrum)
-        ScalarType.pffftTransformOrdered(ptr, rebind(spectrum), rebind(signal), toAddress(work), .backward)
+        ScalarType.pffftTransformOrdered(ptr, rebind(spectrum), rebind(signal), workPtr, .backward)
     }
 
     /// Perform a forward FFT on the input buffer, with implementation defined order.
@@ -290,12 +297,12 @@ public struct FFT<T: FFTElement>: ~Copyable {
     ///  - sign: The direction of the FFT.
     public func forwardToInternalLayout(signal: borrowing Buffer<T>, spectrum: borrowing Buffer<ScalarType>) {
         checkFftInternalLayoutBufferCounts(signal: signal, spectrum: spectrum)
-        ScalarType.pffftTransform(ptr, rebind(signal), spectrum.baseAddress, toAddress(work), .forward)
+        ScalarType.pffftTransform(ptr, rebind(signal), spectrum.baseAddress, workPtr, .forward)
     }
 
     public func inverseFromInternalLayout(spectrum: borrowing Buffer<ScalarType>, signal: borrowing Buffer<T>) {
         checkFftInternalLayoutBufferCounts(signal: signal, spectrum: spectrum)
-        ScalarType.pffftTransform(ptr, spectrum.baseAddress, rebind(signal), toAddress(work), .backward)
+        ScalarType.pffftTransform(ptr, spectrum.baseAddress, rebind(signal), workPtr, .backward)
     }
 
     public func reorder(spectrum: borrowing Buffer<ScalarType>, output: borrowing Buffer<ComplexType>) {
