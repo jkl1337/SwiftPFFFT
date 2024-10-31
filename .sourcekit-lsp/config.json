@@ -1,0 +1,5 @@
+{
+    "swiftPM": {
+        "cCompilerFlags:" ["-DPFFFT_SCALVEC_ENABLED=1", "-DPFFFT_ENABLE_NEON", "_USE_MATH_DEFINES", "NDEBUG"],
+    }
+}

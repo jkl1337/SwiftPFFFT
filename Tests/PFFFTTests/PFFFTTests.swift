@@ -3,12 +3,12 @@ import ComplexModule
 import XCTest
 
 final class FFTTests: XCTestCase {
-    func testFftFloat() throws {
+    func testFftComplexFloat() throws {
         let fft = try FFT<Complex<Float>>(n: 16)
         let signal = fft.makeSignalBuffer()
         let spectrum = fft.makeSpectrumBuffer()
 
-        signal.mapInPlace { i, v in
+        signal.enumerateInPlace { i, v in
             v = Complex(Float(i) + 1.0, Float(i) - 2.0)
         }
 

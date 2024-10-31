@@ -25,7 +25,7 @@ performance with much simpler usage and a permissive 3 clause BSD license.
 let fft = try FFT<Complex<Float>>(n: 16)
 let signal = fft.makeSignalBuffer()
 
-signal.mapInPlace { (i, v) in
+signal.enumerateInPlace { (i, v) in
     v = Complex(Float(i) + 1.0, Float(i) - 2.0)
 }
 
