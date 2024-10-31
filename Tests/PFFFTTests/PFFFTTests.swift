@@ -8,9 +8,7 @@ final class FFTTests: XCTestCase {
         let signal = fft.makeSignalBuffer()
         let spectrum = fft.makeSpectrumBuffer()
 
-        signal.enumerateInPlace { i, v in
-            v = Complex(Float(i) + 1.0, Float(i) - 2.0)
-        }
+        signal.mapInPlace { Complex(Float($0) + 1.0, Float($0) - 2.0) }
 
         fft.forward(signal: signal, spectrum: spectrum)
 

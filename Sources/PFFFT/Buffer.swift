@@ -45,12 +45,12 @@ public struct Buffer<T>: ~Copyable {
     }
 
     /// Calls the given closure on each element in the buffer for mutation in place.
-    /// - Parameter body: A closure that accepts a zero-based index and mutable element of the
-    ///   buffer as a parameter. `body` may throw and the error will be propagated to the
-    ///   caller. Any return value of the closure is discarded.
-    @inlinable public func enumerateInPlace(_ body: (Int, inout T) throws -> Void) rethrows {
+    /// - Parameter body: A closure that accepts a zero-based enumeration index.
+    ///   and must return a new value for the element at that index.
+    ///   `body` may throw and the error will be propagated to the caller.
+    @inlinable public func mapInPlace(_ body: (Int) throws -> T) rethrows {
         for i in 0 ..< buffer.count {
-            try body(i, &buffer[i])
+            try buffer[i] = body(i)
         }
     }
 }
@@ -64,7 +64,7 @@ public protocol ComplexType {
 extension Complex: ComplexType {}
 
 public extension Buffer where T: ComplexType {
-    /// Calls the given closure on each element in the buffer for mutation in place with
+    /// Calls the given closure on each space in the buffer for mutation in place with
     /// Nyquist replacement at the end.
     ///
     /// When operating on Complex->Real transforms PFFFT internally uses a slightly more compact
@@ -72,15 +72,15 @@ public extension Buffer where T: ComplexType {
     /// spectral components are always real, PFFFT places the DC (0) component
     /// in the real part of the 0th element as expected, but places the Nyquist `(n/2)` component
     /// in the imaginary part of the 0th element.
-    /// This enumerator works like `enumerateInPlace` but at the end places the real part of the
+    /// This enumerator works like `mapInPlace` but at the end places the real part of the
     /// n/2 component into the imaginary part of the 0th element. In normal use it is expected
     /// that a spectral buffer of 1 extra element is created suct that `count == (n/2 + 1)`.
-    /// - Parameter body: A closure that accepts a zero-based index and mutable element of the
-    ///   buffer as a parameter. `body` may throw and the error will be propagated to the
-    ///   caller. Any return value of the closure is discarded.
-    @inlinable func enumerateInPlaceSwapLast(_ body: (Int, inout T) throws -> Void) rethrows {
+    /// - Parameter body: A closure that accepts a zero-based enumeration index.
+    ///   and must return a new value for the element at that index.
+    ///   `body` may throw and the error will be propagated to the caller.
+    @inlinable func mapInPlaceSwapLast(_ body: (Int) throws -> T) rethrows {
         for i in 0 ..< buffer.count {
-            try body(i, &buffer[i])
+            try buffer[i] = body(i)
         }
         buffer[0].imaginary = buffer[buffer.count - 1].real
     }
