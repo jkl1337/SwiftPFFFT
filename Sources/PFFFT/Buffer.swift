@@ -74,7 +74,7 @@ public extension Buffer where T: ComplexType {
     /// in the imaginary part of the 0th element.
     /// This enumerator works like `mapInPlace` but at the end places the real part of the
     /// n/2 component into the imaginary part of the 0th element. In normal use it is expected
-    /// that a spectral buffer of 1 extra element is created suct that `count == (n/2 + 1)`.
+    /// that a spectral buffer of 1 extra element is created such that `count == (n/2 + 1)`.
     /// - Parameter body: A closure that accepts a zero-based enumeration index.
     ///   and must return a new value for the element at that index.
     ///   `body` may throw and the error will be propagated to the caller.

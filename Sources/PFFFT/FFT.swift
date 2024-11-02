@@ -310,7 +310,7 @@ public struct FFT<T: FFTElement>: ~Copyable {
             fatalError("signal buffer too small")
         }
         guard output.count >= n else {
-            fatalError("outputbuffer too small")
+            fatalError("output buffer too small")
         }
         ScalarType.pffftZreorder(ptr, spectrum.baseAddress, rebind(output), .forward)
     }
