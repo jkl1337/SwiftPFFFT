@@ -1,0 +1,52 @@
+name: test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test-linux:
+    name: Tests Linux
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ toJSON(matrix) }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        swift: ["5.9", "5.10", "6.0"]
+
+    runs-on: ubuntu-latest
+    container: swift:${{ matrix.swift }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build
+
+      - name: Run tests
+        run: swift test
+
+  test-macos:
+    name: Tests MacOS
+    runs-on: macos-14
+
+    steps:
+      - name: Select toolchain
+        uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: latest-stable }
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build
+
+      - name: Run tests
+        run: swift test
